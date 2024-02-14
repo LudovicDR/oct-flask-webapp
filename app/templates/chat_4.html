@@ -2,6 +2,13 @@
 
 {% block content %}
 <div class="text-center">
-    Hi! Here is your chatbot with model 4
+    <div id="chat" class="container chatbox"><div class="row"><div>Hi! Here is your chatbot with model GPT 4</div></div></div>
+    <form id="message-form">
+        <div class="container"><div class="row">
+            <div class="col-11"><textarea id="message" rows="5" style="width: 100%; resize: none;" placeholder="Posez votre question..."></textarea></div>
+            <div class="col-1" style="margin: auto;"><button>Send</button></div>
+        </div></div>
+    </form> 
 </div>
+<script src="{{url_for('static', filename='chat.4.js')}}"></script>
 {% endblock %}

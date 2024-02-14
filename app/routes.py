@@ -6,9 +6,21 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from openai import AzureOpenAI
 
+g_messages = [
+    {"role": "system", "content": "Tu es un assitant très efficace."},
+    {"role": "user", "content": "Est-ce que tu es prêt à m'aider ?"},
+    {"role": "assistant", "content": "Bien sûr, que puis-je faire pour te rendre service ?"}
+]
+
+def reset_messages():
+    return [
+        {"role": "system", "content": "Tu es un assitant très efficace."},
+        {"role": "user", "content": "Est-ce que tu es prêt à m'aider ?"},
+        {"role": "assistant", "content": "Bien sûr, que puis-je faire pour te rendre service ?"}
+    ]
+
 @MyApp.route('/')
 @MyApp.route('/index')
-
 def index():
     print(MyApp.config["SQLALCHEMY_DATABASE_URI"])
     return render_template('index.html')
@@ -53,29 +65,68 @@ def users():
     users = MyDb.session.execute(MyDb.select(Utilisateur)).scalars()
     return render_template('users.html', users=users)
 
-@MyApp.route('/chat_35', methods=['GET', 'POST'])
+@MyApp.route('/message', methods = ['POST'])
 @login_required
-def chat_35():
+def message():
+    user_input = request.get_json()
+    message = user_input['message']
+
+    # Save to DB, call NLP, etc
+    g_messages.append({"role": "user", "content": message })
+    print(f"{message=}")
+  
+    return {'message': message}
+
+@MyApp.route('/bot')
+@login_required
+def bot():
+    # Call API to generate response 
     client = AzureOpenAI(
         azure_endpoint = MyApp.config["AZURE_OPENAI_ENDPOINT"], 
         api_key = MyApp.config["AZURE_OPENAI_KEY"],  
         api_version = "2023-05-15"
     )
+    response = client.chat.completions.create(model = "chat", messages = g_messages) # model = "deployment_name".
+    chat_reponse = response.choices[0].message.content
+    g_messages.append({"role": "assistant", "content": chat_reponse })
+    print(chat_reponse)
+    return {'response': chat_reponse}
 
-    response = client.chat.completions.create(
-        model = "chat", # model = "deployment_name".
-        messages = [
-            {"role": "system", "content": "Tu es un assitant très efficace."},
-            {"role": "user", "content": "Est-ce que Azure OpenAI accepte des clés d'API personnalisées ?"},
-            {"role": "assistant", "content": "Oui, les clés d'API personnalisées sont supportées par Azure OpenAI."},
-            {"role": "user", "content": "Est-ce que d'autres services Azure AI acceptent cela aussi ?"}
-        ]
+@MyApp.route('/chat_35', methods=['GET', 'POST'])
+@login_required
+def chat_35():
+    g_messages = reset_messages()
+    return render_template('chat_35.html')
+
+@MyApp.route('/message_4', methods = ['POST'])
+@login_required
+def message_4():
+    user_input = request.get_json()
+    message = user_input['message']
+
+    # Save to DB, call NLP, etc
+    g_messages.append({"role": "user", "content": message })
+    print(f"{message=}")
+  
+    return {'message': message}
+
+@MyApp.route('/bot_4')
+@login_required
+def bot_4():
+    # Call API to generate response 
+    client = AzureOpenAI(
+        azure_endpoint = MyApp.config["AZURE_OPENAI_ENDPOINT"], 
+        api_key = MyApp.config["AZURE_OPENAI_KEY"],  
+        api_version = "2023-05-15"
     )
-
-    print(response.choices[0].message.content)
-    return render_template('chat_35.html', message = response.choices[0].message.content)
+    response = client.chat.completions.create(model = "gpt4", messages = g_messages) # model = "deployment_name".
+    chat_reponse = response.choices[0].message.content
+    g_messages.append({"role": "assistant", "content": chat_reponse })
+    print(chat_reponse)
+    return {'response': chat_reponse}
 
 @MyApp.route('/chat_4', methods=['GET', 'POST'])
 @login_required
 def chat_4():
+    g_messages = reset_messages()
     return render_template('chat_4.html')
