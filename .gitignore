@@ -128,5 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# SQLAlchemy databas
+# SQLAlchemy database & migrations
 app.db
+migrations/
+
+#VS Code
+.vscode/

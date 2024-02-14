@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="text-center">
+  {% if current_user.is_anonymous %}
+    <a href="{{ url_for('login') }}" class="button">Connexion</a>
+    <a href="{{ url_for('register') }}" class="button">S'enregistrer ?</a>
+  {% else %}
+    Home page under construction! 
+  {% endif %}
+</div>
+{% endblock %}
