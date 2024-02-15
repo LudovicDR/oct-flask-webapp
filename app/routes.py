@@ -65,9 +65,9 @@ def users():
     users = MyDb.session.execute(MyDb.select(Utilisateur)).scalars()
     return render_template('users.html', users=users)
 
-@MyApp.route('/message', methods = ['POST'])
+@MyApp.route('/message/<version>', methods = ['POST'])
 @login_required
-def message():
+def message(version):
     user_input = request.get_json()
     message = user_input['message']
 
@@ -77,16 +77,18 @@ def message():
   
     return {'message': message}
 
-@MyApp.route('/bot')
+@MyApp.route('/bot/<version>')
 @login_required
-def bot():
+def bot(version):
     # Call API to generate response 
     client = AzureOpenAI(
         azure_endpoint = MyApp.config["AZURE_OPENAI_ENDPOINT"], 
         api_key = MyApp.config["AZURE_OPENAI_KEY"],  
         api_version = "2023-05-15"
     )
-    response = client.chat.completions.create(model = "chat", messages = g_messages) # model = "deployment_name".
+    model = "chat" if version == "3.5" else "gpt4"
+    print(f"{model=}")
+    response = client.chat.completions.create(model = model, messages = g_messages)
     chat_reponse = response.choices[0].message.content
     g_messages.append({"role": "assistant", "content": chat_reponse })
     print(chat_reponse)
@@ -97,33 +99,6 @@ def bot():
 def chat_35():
     g_messages = reset_messages()
     return render_template('chat_35.html')
-
-@MyApp.route('/message_4', methods = ['POST'])
-@login_required
-def message_4():
-    user_input = request.get_json()
-    message = user_input['message']
-
-    # Save to DB, call NLP, etc
-    g_messages.append({"role": "user", "content": message })
-    print(f"{message=}")
-  
-    return {'message': message}
-
-@MyApp.route('/bot_4')
-@login_required
-def bot_4():
-    # Call API to generate response 
-    client = AzureOpenAI(
-        azure_endpoint = MyApp.config["AZURE_OPENAI_ENDPOINT"], 
-        api_key = MyApp.config["AZURE_OPENAI_KEY"],  
-        api_version = "2023-05-15"
-    )
-    response = client.chat.completions.create(model = "gpt4", messages = g_messages) # model = "deployment_name".
-    chat_reponse = response.choices[0].message.content
-    g_messages.append({"role": "assistant", "content": chat_reponse })
-    print(chat_reponse)
-    return {'response': chat_reponse}
 
 @MyApp.route('/chat_4', methods=['GET', 'POST'])
 @login_required
