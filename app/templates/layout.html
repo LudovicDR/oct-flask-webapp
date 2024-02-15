@@ -5,6 +5,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon-32x32.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{url_for('static', filename='display.js')}}"></script>
 </head>
 <body class="content">
     <header>
@@ -15,18 +16,20 @@
         </div>
         {% else %}
         <nav>
-            <ul>
-                <li class="home"><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/OCTIME-Group-2019-Bleu-RVB.png') }}" alt="Octime Logo" width="100px" /></a></li>
-                <li class="menu"><a href="{{ url_for('users') }}">Utilisateurs</a></li>
-                <li class="menu"><a href="{{ url_for('chat_35') }}">Chat 3.5</a></li>
-                <li class="menu"><a href="{{ url_for('chat_4') }}">Chat 4</a></li>
-            </ul>
-            <span class="account">Hello {{ current_user.prenom }} <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='images/power_4682682.png') }}" alt="Déconnexion" height="24px; "/></a></span>
+            <div class="container"><div class="row" style="background: rgb(230, 230, 230);">
+                <div class="col-10"><ul class="menu">
+                    <li class="home"><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/OCTIME-Group-2019-Bleu-RVB.png') }}" alt="Octime Logo" width="100px" /></a></li>
+                    <li class="item"><a class="menu_item" id="admin" href="{{ url_for('users') }}">Administration</a></li>
+                    <li class="item"><a class="menu_item" id="gpt35" href="{{ url_for('chat_35') }}">Chat 3.5</a></li>
+                    <li class="item"><a class="menu_item" id="gpt4" href="{{ url_for('chat_4') }}">Chat 4</a></li>
+                </ul></div>
+                <div class="col-2" style="text-align: right; margin: auto;">Bonjour {{ current_user.prenom }} <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='images/power_4682682.png') }}" alt="Déconnexion" height="24px; "/></a></div>
+            </div></div>
         </nav>
         {% endif %}
     </header>
     {% for category, message in get_flashed_messages(with_categories=true) %}
-    <div class="flash {{ category }}">{{ message }}</div>
+    <div class="container"><div class="row"><div class="flash {{ category }}">{{ message }}</div></div></div>
     {% endfor %}
     <main>
         {% block content %}{% endblock %}

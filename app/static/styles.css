@@ -6,7 +6,7 @@ body
 }
 
 .content { padding: 1rem 1rem; }
-.content > header { border-bottom: 1px solid lightgray; margin-bottom: 5px; }
+.content > header { margin-bottom: 5px; }
 .content > header h1 { flex: auto; margin: 1rem 0 0.25rem 0; }
 .flash { margin: 1em 0; padding: 1em; border: 1px solid #377ba8; }
 .message { background: #cae6f6; }
@@ -42,12 +42,44 @@ label { min-width: 200px; text-align: right; }
 form { padding: 4px; }
 form > div { padding: 2px; }
 
-nav { background: rgb(172, 243, 252); display: flex; align-items: center; padding: 0 0.5rem; }
-nav ul { list-style: none; margin: 0; padding: 0; }
-nav ul li { display: inline; padding: 0.5rem; }
-.home, .menu { float: left; }
-.menu:hover { font-weight: bold; cursor: pointer; }
-.account { float: right; }
+.menu
+{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    justify-content: flex-start;
+ }
+.menu li { list-style: none; }
+.menu_item, .menu_item_actif
+{
+    display: block;
+    min-width: 120px;
+    margin: 0.5rem;               /* Marges externes (1 valeurs = 4 directions) */
+    padding: 0.4rem 0;            /* Marges internes (2 valeurs = haut/bas et gauche/droite)*/
+    text-align: center;           /* Centrage du texte */   
+    text-decoration: none;        /* Suppression du soulignement */
+    border: 1px solid #fff;       /* Ajout d'une bordure */
+    border-radius: 4px;           /* Arrondis des bordures */
+}
+.menu_item
+{
+    background-color: #1ABC9C;    /* Couleur d'arrière-plan */
+    color: #fff;                  /* Couleur du texte */
+    border-color: #fff;
+    transition: all 1s;
+}
+.menu_item_actif
+{    
+    background-color: #000 ; 
+    color: #1ABC9C ;
+    border-color: #1ABC9C ;
+}
+.menu_item:hover
+{
+    background-color: #ed2794;
+    color: #ffe843;
+    border-color: #ffe843;
+}
 
 .bordered_table
 {

@@ -25,8 +25,8 @@ async function fetchBotResponse(version)
     const res = await fetch('/bot/' + version);
     const data = await res.json();
 
-    console.log(data.response);
+    //console.log(data.response);
     var to_print = data.response.replaceAll("\n", "<br>");
-    console.log(to_print);
-    chat.innerHTML += `<div class="row"><div class="col-10 assistantbox"><p style="margin: 0px;">${to_print}</p></div><div class="col-1"></div></div>`;
+    //console.log(to_print);
+    chat.innerHTML += `<div class="row"><div class="col-10 assistantbox">${to_print}</div><div class="col-1"></div></div>`;
 }
