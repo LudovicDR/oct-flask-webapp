@@ -1,23 +1,10 @@
 from app import MyApp, MyDb
 from app.forms import LoginForm, RegisterForm
 from app.models import Utilisateur
-from flask import flash, redirect, render_template, url_for, request
+from flask import flash, redirect, render_template, url_for, request, Response
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
-from openai import AzureOpenAI
-
-g_messages = [
-    {"role": "system", "content": "Tu es un assitant très efficace."},
-    {"role": "user", "content": "Est-ce que tu es prêt à m'aider ?"},
-    {"role": "assistant", "content": "Bien sûr, que puis-je faire pour te rendre service ?"}
-]
-
-def reset_messages():
-    return [
-        {"role": "system", "content": "Tu es un assitant très efficace."},
-        {"role": "user", "content": "Est-ce que tu es prêt à m'aider ?"},
-        {"role": "assistant", "content": "Bien sûr, que puis-je faire pour te rendre service ?"}
-    ]
+from app.openAI import g_messages, generate_response, reset_messages
 
 @MyApp.route('/')
 @MyApp.route('/index')
@@ -80,19 +67,7 @@ def message(version):
 @MyApp.route('/bot/<version>')
 @login_required
 def bot(version):
-    # Call API to generate response 
-    client = AzureOpenAI(
-        azure_endpoint = MyApp.config["AZURE_OPENAI_ENDPOINT"], 
-        api_key = MyApp.config["AZURE_OPENAI_KEY"],  
-        api_version = "2023-05-15"
-    )
-    model = "chat" if version == "3.5" else "gpt4"
-    print(f"{model=}")
-    response = client.chat.completions.create(model = model, messages = g_messages)
-    chat_reponse = response.choices[0].message.content
-    g_messages.append({"role": "assistant", "content": chat_reponse })
-    print(chat_reponse)
-    return {'response': chat_reponse}
+    return Response(generate_response(MyApp, version), mimetype='text/event-stream')
 
 @MyApp.route('/chat_35', methods=['GET', 'POST'])
 @login_required

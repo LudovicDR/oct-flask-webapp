@@ -15,7 +15,8 @@ form.addEventListener('submit', e => {
     }).then(res => res.json())
     .then(data => {
         chat.innerHTML += `<div class="row"><div class="col-1"></div><div class="col-10 userbox">${data.message}</div></div>`
-        fetchBotResponse(version.value)
+        chat.innerHTML += `<div class="row"><div class="col-10 assistantbox" id="content_${chat.childElementCount+1}">Rédaction de la réponse...</div><div class="col-1"></div></div>`;
+        new_fetchBotResponse(version.value)
     });
     input.value = '';
 })
@@ -29,4 +30,20 @@ async function fetchBotResponse(version)
     var to_print = data.response.replaceAll("\n", "<br>");
     //console.log(to_print);
     chat.innerHTML += `<div class="row"><div class="col-10 assistantbox">${to_print}</div><div class="col-1"></div></div>`;
+}
+
+function new_fetchBotResponse(version)
+{
+    var messageDiv = document.getElementById("content_" + chat.childElementCount);
+    var source = new EventSource("/bot/" + version);
+
+    source.onopen = (e) => console.log("Connection opened");
+    source.addEventListener("start", function(e) { messageDiv.innerHTML = ""; });
+    source.onerror = (e) => console.log("Error:", e);
+    source.onmessage = (e) => {
+        var msg = JSON.parse(e.data);
+        //console.log("data=" + msg.text + "/§/");
+        messageDiv.innerHTML += msg.text.replaceAll("\n", "<br/>");
+    }
+    source.addEventListener("end", function(e) { source.close(); });
 }
